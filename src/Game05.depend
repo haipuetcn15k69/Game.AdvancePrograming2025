@@ -59,3 +59,17 @@
 	<SDL_ttf.h>
 	<SDL_mixer.h>
 
+1744528197 source:c:\users\admin\onedrive\documents\game.advanceprograming2025\src\main.cpp
+	<SDL.h>
+	<SDL_image.h>
+	<iostream>
+	"SDL_utils.h"
+	<SDL_mixer.h>
+	"SDL-Mix.h"
+	<vector>
+	<string>
+	<cstdlib>
+	<ctime>
+	<SDL_ttf.h>
+	"SDL_text.h"
+
