@@ -80,3 +80,4 @@ void renderTexture(SDL_Texture *texture, int x, int y,
 }
 
 
+

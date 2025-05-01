@@ -7,3 +7,4 @@ Mix_Music *loadMusic(const char* path);
 void play(Mix_Music *gMusic);
 Mix_Chunk* loadSound(const char* path);
 void play (Mix_Chunk *gChunk);
+//void ToggleSound(Mix_Music* gMusic,GameState currentState);

@@ -4,6 +4,8 @@
 #include "SDL-Mix.h"
 #include <vector>
 #include <string>
+using namespace std;
+bool soundEnabled = true;
  Mix_Music *loadMusic(const char* path)
     {
         Mix_Music *gMusic = Mix_LoadMUS(path);
