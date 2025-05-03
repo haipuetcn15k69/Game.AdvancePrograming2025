@@ -104,7 +104,8 @@ void drawSnake(const Point& currentDirection) {
     if (gHeadTexture) {
         destRect.x = body[0].x; destRect.y = body[0].y;
         double angle = 0.0;
-        if (currentDirection.x > 0) angle = 90.0; else if (currentDirection.x < 0) angle = 270.0;
+        if (currentDirection.x > 0) angle = 90.0;
+        else if (currentDirection.x < 0) angle = 270.0;
         else if (currentDirection.y > 0) angle = 180.0;
         SDL_RenderCopyEx(gRenderer, gHeadTexture, NULL, &destRect, angle, NULL, SDL_FLIP_NONE);
     } else {
