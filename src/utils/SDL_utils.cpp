@@ -1,3 +1,4 @@
+
 #include <SDL.h>
 #include <SDL_image.h>
 #include <iostream>
@@ -78,6 +79,4 @@ void renderTexture(SDL_Texture *texture, int x, int y,
 
 	SDL_RenderCopy(renderer, texture, NULL, &dest);
 }
-
-
 

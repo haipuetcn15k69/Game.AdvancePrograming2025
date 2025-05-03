@@ -39,4 +39,3 @@ bool soundEnabled = true;
             Mix_PlayChannel( -1, gChunk, 0 );
         }
     }
-
