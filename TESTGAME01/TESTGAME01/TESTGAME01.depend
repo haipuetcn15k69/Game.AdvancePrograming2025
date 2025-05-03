@@ -1,0 +1,68 @@
+# depslib dependency file v1.0
+1746154666 source:d:\snake game\testgame01\mixer\sdl-mix.cpp
+	<iostream>
+	<SDL.h>
+	<SDL_mixer.h>
+	"SDL-Mix.h"
+	<vector>
+	<string>
+
+1746154690 d:\snake game\testgame01\mixer\sdl-mix.h
+	<iostream>
+	<SDL.h>
+	<SDL_mixer.h>
+	<vector>
+	<string>
+
+1746243726 source:d:\snake game\testgame01\text\sdl_text.cpp
+	<iostream>
+	<SDL.h>
+	<SDL_ttf.h>
+	"SDL_text.h"
+	<vector>
+	<string>
+	<fstream>
+	<algorithm>
+
+1746243751 d:\snake game\testgame01\text\sdl_text.h
+	<iostream>
+	<SDL.h>
+	<SDL_ttf.h>
+	<vector>
+	<string>
+	<fstream>
+	<algorithm>
+	<string>
+
+1746154454 source:d:\snake game\testgame01\utils\sdl_utils.cpp
+	<SDL.h>
+	<SDL_image.h>
+	<iostream>
+	"SDL_utils.h"
+	<vector>
+	<string>
+	<SDL_ttf.h>
+	<SDL_mixer.h>
+
+1746154454 d:\snake game\testgame01\utils\sdl_utils.h
+	<SDL.h>
+	<SDL_image.h>
+	<iostream>
+	<SDL_ttf.h>
+
+1746250997 source:d:\snake game\testgame01\main.cpp
+	<SDL.h>
+	<SDL_image.h>
+	<iostream>
+	"utils/SDL_utils.h"
+	<SDL_mixer.h>
+	"mixer/SDL-Mix.h"
+	<vector>
+	<string>
+	<cstdlib>
+	<ctime>
+	<SDL_ttf.h>
+	"text/SDL_text.h"
+	<fstream>
+	<algorithm>
+
