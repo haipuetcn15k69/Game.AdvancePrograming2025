@@ -31,7 +31,6 @@ TTF_Font* gBigFont = nullptr;
 Mix_Music* gMusic = nullptr;
 Mix_Chunk* gEat = nullptr;
 Mix_Chunk* gLose = nullptr;
-Mix_Chunk* gBomb = nullptr;
 
 //khai báo con trỏ ảnh
 SDL_Texture* gHeadTexture = nullptr;
@@ -400,7 +399,7 @@ if (it != foods.end()) {
         doubleStart = SDL_GetTicks();
     }
     if ( !foods.empty() && next_head == foods.back() && score % 3 == 0 && score>0) {
-        if(gBomb) play(gBomb);
+        if(gLose) play(gLose);
         currentState = MENU;
     }
     else score++;
@@ -435,7 +434,6 @@ if (it != foods.end()) {
             if (gLose) play(gLose);
             highScore = max(highScore, score);
             SaveHighScore(highScore);
-            SDL_Delay(1000);
             currentState = MENU;
         }
     }
@@ -476,7 +474,7 @@ int main (int argc, char* argv[]) {
     gBigFont = loadFont("font/timesbd.ttf",72);
     gFont = loadFont("font/timesbd.ttf", 36);
     if (!gFont) { cerr << "Failed to load font!" << endl; quitSDL(); return 1; }
-    gBomb = loadSound("audio/bomb.wav");
+
     gMusic = loadMusic("audio/RunningAway.mp3");
     gEat = loadSound("audio/eating.wav");
     gLose = loadSound("audio/lose.wav");
