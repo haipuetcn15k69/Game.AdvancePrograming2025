@@ -19,15 +19,10 @@ const int SCREEN_HEIGHT = 800;
 const char* WINDOW_TITLE = "SnakeGame New Edition: Dragon World";
 const int RECT_SIZE = 20;
 bool gameIsRunning = true;
-bool   showDouble   = false;
-Uint32 doubleStart  = 0;
-const Uint32 DOUBLE_DURATION = 1000;
-
 //khai báo con trỏ âm thanh
 SDL_Window* gWindow = nullptr;
 SDL_Renderer* gRenderer = nullptr;
 TTF_Font* gFont = nullptr;
-TTF_Font* gBigFont = nullptr;
 Mix_Music* gMusic = nullptr;
 Mix_Chunk* gEat = nullptr;
 Mix_Chunk* gLose = nullptr;
@@ -38,8 +33,6 @@ SDL_Texture* gBodyTexture = nullptr;
 SDL_Texture* gFoodTexture = nullptr;
 SDL_Texture* gBackgroundTexture = nullptr;
 SDL_Texture* menuBackground = nullptr;
-SDL_Texture* gNewFood = nullptr;
-SDL_Texture* gBestFood = nullptr;
 // Class trạng thái
 enum GameState {MENU , PLAYING , PAUSED , HIGH_SCORE_DISPLAY, SPEED_SELECTION};
 GameState currentState = MENU;
@@ -146,40 +139,7 @@ void generateFoods()
           }
       }
   }
- void drawNewFoods()
-  {   int size = (int) foods.size();
-      if(!gRenderer) return;
-      for(const auto& f: foods)
-      {   if(size ==1 ) break;
-          SDL_Rect dest = {f.x ,f.y , RECT_SIZE , RECT_SIZE};
-          if(gNewFood) SDL_RenderCopy(gRenderer , gFoodTexture , nullptr ,&dest);
-          else {
-            SDL_SetRenderDrawColor (gRenderer,255,0,0,255);
-            SDL_RenderFillRect (gRenderer , &dest);
-            size--;
-          }
-      }
-          SDL_Rect dest = {foods[foods.size() - 1].x ,foods[foods.size() - 1].y , RECT_SIZE , RECT_SIZE};
-          if(gFoodTexture) SDL_RenderCopy(gRenderer , gNewFood , nullptr ,&dest);
-  }
-  void bomb ()
-  {   int size = (int) foods.size();
-      if(!gRenderer) return;
-       for(const auto& f: foods)
-      {   if(size ==1 ) break;
-          SDL_Rect dest = {f.x ,f.y , RECT_SIZE , RECT_SIZE};
-          if(gNewFood) SDL_RenderCopy(gRenderer , gFoodTexture , nullptr ,&dest);
-          else {
-            SDL_SetRenderDrawColor (gRenderer,255,0,0,255);
-            SDL_RenderFillRect (gRenderer , &dest);
-            size--;
-          }
-      }
-          SDL_Rect dest = {foods[foods.size() - 1].x ,foods[foods.size() - 1].y , RECT_SIZE , RECT_SIZE};
-          if(gFoodTexture) SDL_RenderCopy(gRenderer , gBestFood , nullptr ,&dest);
 
-
-  }
 void quitSDL() {
     if (gHeadTexture) SDL_DestroyTexture(gHeadTexture); gHeadTexture = nullptr;
     if (gBodyTexture) SDL_DestroyTexture(gBodyTexture); gBodyTexture = nullptr;
@@ -223,8 +183,8 @@ void RenderPauseScreen()
     SDL_RenderFillRect(gRenderer,&pauseOverlay);
     SDL_SetRenderDrawBlendMode(gRenderer,SDL_BLENDMODE_NONE);
     SDL_Color white = {255, 255, 255, 255}, yellow = {255, 255, 0, 255};
-    RenderText("PAUSED", (SCREEN_WIDTH - 100) / 2, SCREEN_HEIGHT / 4, white,gFont,gRenderer);
-    int buttonW = 200, buttonH = 50, buttonX = (SCREEN_WIDTH - buttonW) / 2, buttonY = SCREEN_HEIGHT / 2 - buttonH, spacing = 60;
+     RenderText("PAUSED", (SCREEN_WIDTH - 100) / 2, SCREEN_HEIGHT / 4, white,gFont,gRenderer);
+      int buttonW = 200, buttonH = 50, buttonX = (SCREEN_WIDTH - buttonW) / 2, buttonY = SCREEN_HEIGHT / 2 - buttonH, spacing = 60;
     resumeRect = {buttonX, buttonY, buttonW, buttonH}; menuRect = {buttonX, buttonY + spacing, buttonW, buttonH};
     int mouseX, mouseY; SDL_GetMouseState(&mouseX, &mouseY); SDL_Point mousePoint = {mouseX, mouseY};
     SDL_Color resumeColor = SDL_PointInRect(&mousePoint, &resumeRect) ? yellow : white; RenderText("Resume (P/Esc)", resumeRect.x + 10, resumeRect.y + 10, resumeColor,gFont,gRenderer);
@@ -238,8 +198,7 @@ void RenderHighScoreScreen() {
     int buttonW = 200, buttonH = 50, buttonX = (SCREEN_WIDTH - buttonW) / 2, buttonY = SCREEN_HEIGHT / 2 + 50;
     menuRect = {buttonX, buttonY, buttonW, buttonH};
     int mouseX, mouseY; SDL_GetMouseState(&mouseX, &mouseY); SDL_Point mousePoint = {mouseX, mouseY};
-    SDL_Color menuColor = SDL_PointInRect(&mousePoint, &menuRect) ? yellow : white;
-    RenderText("Back to Menu (Esc)", menuRect.x + 5, menuRect.y + 10, menuColor,gFont,gRenderer);
+    SDL_Color menuColor = SDL_PointInRect(&mousePoint, &menuRect) ? yellow : white; RenderText("Back to Menu (Esc)", menuRect.x + 5, menuRect.y + 10, menuColor,gFont,gRenderer);
 }
 void RenderSpeedScreen() {
     SDL_Color white = {255, 255, 255, 255}, yellow = {255, 255, 0, 255}, green = {0, 255, 0, 255};
@@ -256,24 +215,11 @@ void RenderSpeedScreen() {
 }
 void RenderGameScreen(const Point& current_direction) {
     if (gBackgroundTexture != nullptr) { SDL_RenderCopy(gRenderer, gBackgroundTexture, NULL, NULL); }
-    if(score % 5 == 0 && score > 0 ) drawNewFoods();
-    else if(score > 0 && score % 3 == 0 ) bomb();
-    else drawFoods();
-    if (showDouble) {
-    Uint32 now = SDL_GetTicks();
-    SDL_Color yellow = {255, 255, 0, 255};
-    RenderText("X2 DOUBLE!",
-               SCREEN_WIDTH/3-80, SCREEN_HEIGHT/3-40,
-               yellow, gBigFont, gRenderer);
-    if (now - doubleStart > DOUBLE_DURATION) {
-        showDouble = false;
-    }
-}
+    drawFoods();
     drawSnake(current_direction);
     string scoreText = "Score: " + to_string(score); string highScoreText = "High: " + to_string(highScore);
     SDL_Color textColor = {255, 255, 255, 255};
-    RenderText(scoreText, 10, 10, textColor,gFont,gRenderer);
-    RenderText(highScoreText, SCREEN_WIDTH - 150, 10, textColor,gFont,gRenderer);
+    RenderText(scoreText, 10, 10, textColor,gFont,gRenderer); RenderText(highScoreText, SCREEN_WIDTH - 150, 10, textColor,gFont,gRenderer);
 }
 void HandleMenuInput(SDL_Event& e) {
     if (e.type == SDL_MOUSEBUTTONDOWN) {
@@ -349,8 +295,6 @@ void HandleSpeedInput(SDL_Event& e) {
 void CoreGame() {
     gHeadTexture = loadTexture("img/head.png", gRenderer); gBodyTexture = loadTexture("img/body.png", gRenderer);
     gFoodTexture = loadTexture("img/food.png", gRenderer); gBackgroundTexture = loadTexture("img/SnakeGameBackGround.jpg", gRenderer);
-    gNewFood = loadTexture("img/newfood.png",gRenderer);
-    gBestFood = loadTexture("img/bestfood.png",gRenderer);
     LoadHighScore(highScore);
     SDL_Event e;
     while (gameIsRunning) {
@@ -374,6 +318,7 @@ void CoreGame() {
             if (currentTime - lastMoveTime >= (Uint32)gameSpeedDelay) {
                 lastMoveTime = currentTime;
                 direction = next_direction;
+
                 if (body.empty()) {
                      ResetGame();
                      currentState = MENU;
@@ -393,16 +338,7 @@ void CoreGame() {
 
 auto it = find(foods.begin(), foods.end(), next_head);
 if (it != foods.end()) {
-     if ( !foods.empty() && next_head == foods.back() && score % 5 == 0 && score>0) {
-        score *= 2;
-        showDouble  = true;
-        doubleStart = SDL_GetTicks();
-    }
-    if ( !foods.empty() && next_head == foods.back() && score % 3 == 0 && score>0) {
-        if(gLose) play(gLose);
-        currentState = MENU;
-    }
-    else score++;
+    score++;
     if (gEat) play(gEat);
     foods.erase(it);
     int columns = SCREEN_WIDTH / RECT_SIZE;
@@ -424,8 +360,7 @@ if (it != foods.end()) {
 
                 }
             }
-
-        if (currentTime - lastShrinkTime >= 8000) {
+             if (currentTime - lastShrinkTime >= 8000) {
         if (body.size() > 1) {
             body.pop_back();
         }
@@ -471,7 +406,7 @@ int main (int argc, char* argv[]) {
     gRenderer = SDL_CreateRenderer(gWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     if (!gRenderer) { cerr << "SDL_CreateRenderer Error: " << SDL_GetError() << endl; quitSDL(); return 1; }
     SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1");
-    gBigFont = loadFont("font/timesbd.ttf",72);
+
     gFont = loadFont("font/timesbd.ttf", 36);
     if (!gFont) { cerr << "Failed to load font!" << endl; quitSDL(); return 1; }
 

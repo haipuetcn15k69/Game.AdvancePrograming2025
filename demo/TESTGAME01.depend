@@ -50,7 +50,7 @@
 	<iostream>
 	<SDL_ttf.h>
 
-1746459109 source:d:\snake game\testgame01\main.cpp
+1746266796 source:d:\snake game\testgame01\main.cpp
 	<SDL.h>
 	<SDL_image.h>
 	<iostream>
@@ -65,7 +65,9 @@
 	"text/SDL_text.h"
 	<fstream>
 	<algorithm>
+	"HandleInput/SDL_HandleInput.h"
 	"score/score.h"
+	"graphic/graphic.h"
 
 1746264268 d:\snake game\testgame01\handleinput\sdl_handleinput.h
 
