@@ -1,4 +1,4 @@
-
+#include <SDL_mixer.h>
 #include <SDL.h>
 #include <SDL_image.h>
 #include <iostream>
@@ -79,4 +79,18 @@ void renderTexture(SDL_Texture *texture, int x, int y,
 
 	SDL_RenderCopy(renderer, texture, NULL, &dest);
 }
+void quitSDL(Mix_Chunk* gEat,SDL_Texture* gHeadTexture,SDL_Texture* gBodyTexture,SDL_Texture* gFoodTexture,SDL_Texture* gBackgroundTexture,Mix_Chunk* gLose,TTF_Font* gFont,Mix_Music* gMusic,SDL_Renderer* gRenderer,SDL_Window* gWindow) {
+    if (gHeadTexture) SDL_DestroyTexture(gHeadTexture); gHeadTexture = nullptr;
+    if (gBodyTexture) SDL_DestroyTexture(gBodyTexture); gBodyTexture = nullptr;
+    if (gFoodTexture) SDL_DestroyTexture(gFoodTexture); gFoodTexture = nullptr;
+    if (gBackgroundTexture) SDL_DestroyTexture(gBackgroundTexture); gBackgroundTexture = nullptr;
+    if (gEat) Mix_FreeChunk(gEat); gEat = nullptr;
+    if (gLose) Mix_FreeChunk(gLose); gLose = nullptr;
+    if (gMusic) { if(Mix_PlayingMusic() || Mix_PausedMusic()) { Mix_HaltMusic(); } Mix_FreeMusic(gMusic); gMusic = nullptr; }
+    if (gFont) TTF_CloseFont(gFont); gFont = nullptr;
+    if (gRenderer) SDL_DestroyRenderer(gRenderer); gRenderer = nullptr;
+    if (gWindow) SDL_DestroyWindow(gWindow); gWindow = nullptr;
+    TTF_Quit(); Mix_CloseAudio(); Mix_Quit(); IMG_Quit(); SDL_Quit();
+}
+
 

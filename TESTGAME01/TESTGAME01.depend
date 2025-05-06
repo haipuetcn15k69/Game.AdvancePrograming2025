@@ -1,8 +1,7 @@
 # depslib dependency file v1.0
-1746154666 source:d:\snake game\testgame01\mixer\sdl-mix.cpp
+1746523173 source:d:\snake game\testgame01\mixer\sdl-mix.cpp
 	<iostream>
 	<SDL.h>
-	<SDL_mixer.h>
 	"SDL-Mix.h"
 	<vector>
 	<string>
@@ -34,7 +33,8 @@
 	<algorithm>
 	<string>
 
-1746154454 source:d:\snake game\testgame01\utils\sdl_utils.cpp
+1746523204 source:d:\snake game\testgame01\utils\sdl_utils.cpp
+	<SDL_mixer.h>
 	<SDL.h>
 	<SDL_image.h>
 	<iostream>
@@ -44,13 +44,14 @@
 	<SDL_ttf.h>
 	<SDL_mixer.h>
 
-1746154454 d:\snake game\testgame01\utils\sdl_utils.h
+1746523405 d:\snake game\testgame01\utils\sdl_utils.h
 	<SDL.h>
 	<SDL_image.h>
 	<iostream>
 	<SDL_ttf.h>
+	<SDL_mixer.h>
 
-1746505620 source:d:\snake game\testgame01\main.cpp
+1746523871 source:d:\snake game\testgame01\main.cpp
 	<SDL.h>
 	<SDL_image.h>
 	<iostream>
