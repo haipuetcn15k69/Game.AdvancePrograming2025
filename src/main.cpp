@@ -41,8 +41,9 @@ SDL_Texture* gBackgroundTexture = nullptr;
 SDL_Texture* menuBackground = nullptr;
 SDL_Texture* gNewFood = nullptr;
 SDL_Texture* gBestFood = nullptr;
+SDL_Texture* gBox = nullptr;
 // Class trạng thái
-enum GameState {MENU , PLAYING , PAUSED , HIGH_SCORE_DISPLAY, SPEED_SELECTION};
+enum GameState {MENU , PLAYING , PAUSED , HIGH_SCORE_DISPLAY, SPEED_SELECTION,SOUND_POWER};
 GameState currentState = MENU;
 // khai bao score
 int score = 0,highScore  = 0, gameSpeedDelay = 150;
@@ -64,8 +65,9 @@ Point next_direction = direction;
 Uint32 lastMoveTime = 0;
 Uint32 lastShrinkTime = 0;
 const Uint32 SHRINK_INTERVAL = 10000;
-SDL_Rect startRect , speedRect , highScoreRect , quitRect , resumeRect , menuRect;
-SDL_Rect slowRect , mediumRect , fastRect;
+SDL_Rect startRect , speedRect , highScoreRect , quitRect , resumeRect , menuRect,soundRect;
+SDL_Rect slowRect , mediumRect , fastRect,SoundOnRect,SoundOffRect;
+bool soundpower = true;
 void generateFoods()
 {
     foods.clear();
@@ -157,8 +159,8 @@ void generateFoods()
           else {
             SDL_SetRenderDrawColor (gRenderer,255,0,0,255);
             SDL_RenderFillRect (gRenderer , &dest);
-            size--;
           }
+          size--;
       }
           SDL_Rect dest = {foods[foods.size() - 1].x ,foods[foods.size() - 1].y , RECT_SIZE , RECT_SIZE};
           if(gFoodTexture) SDL_RenderCopy(gRenderer , gNewFood , nullptr ,&dest);
@@ -173,14 +175,32 @@ void generateFoods()
           else {
             SDL_SetRenderDrawColor (gRenderer,255,0,0,255);
             SDL_RenderFillRect (gRenderer , &dest);
-            size--;
+
           }
+          size--;
       }
           SDL_Rect dest = {foods[foods.size() - 1].x ,foods[foods.size() - 1].y , RECT_SIZE , RECT_SIZE};
           if(gFoodTexture) SDL_RenderCopy(gRenderer , gBestFood , nullptr ,&dest);
-
+  }
+  void blindbox()
+  {
+       int size = (int) foods.size();
+      if(!gRenderer) return;
+       for(const auto& f: foods)
+      {   if(size ==1 ) break;
+          SDL_Rect dest = {f.x ,f.y , RECT_SIZE , RECT_SIZE};
+          if(gBox) SDL_RenderCopy(gRenderer , gFoodTexture , nullptr ,&dest);
+          else {
+            SDL_SetRenderDrawColor (gRenderer,255,0,0,255);
+            SDL_RenderFillRect (gRenderer , &dest);
+          }
+          size--;
+      }
+          SDL_Rect dest = {foods[foods.size() - 1].x ,foods[foods.size() - 1].y , RECT_SIZE , RECT_SIZE};
+          if(gFoodTexture) SDL_RenderCopy(gRenderer , gBox , nullptr ,&dest);
 
   }
+
 void quitSDL() {
     if (gHeadTexture) SDL_DestroyTexture(gHeadTexture); gHeadTexture = nullptr;
     if (gBodyTexture) SDL_DestroyTexture(gBodyTexture); gBodyTexture = nullptr;
@@ -207,6 +227,7 @@ void RenderMenuScreen()
     speedRect = {buttonX, menuY + spacing, buttonW, buttonH};
     highScoreRect = {buttonX, menuY + spacing * 2, buttonW, buttonH};
     quitRect = {buttonX, menuY + spacing * 3, buttonW, buttonH};
+    soundRect = {buttonX, menuY + spacing * 4, buttonW, buttonH};
     SDL_Color startColor = SDL_PointInRect(&mousePoint, &startRect) ? yellow : white;
     RenderText("Start Game", startRect.x + 30, startRect.y + 10, startColor,gFont,gRenderer);
     SDL_Color speedColor = SDL_PointInRect(&mousePoint, &speedRect) ? yellow : white;
@@ -215,6 +236,8 @@ void RenderMenuScreen()
     RenderText("High Score: " + to_string(highScore), highScoreRect.x + 15, highScoreRect.y + 10, hsColor,gFont,gRenderer);
     SDL_Color quitColor = SDL_PointInRect(&mousePoint, &quitRect) ? yellow : white;
     RenderText("Quit Game", quitRect.x + 40, quitRect.y + 10, quitColor,gFont,gRenderer);
+    SDL_Color soundColor = SDL_PointInRect(&mousePoint,&soundRect) ?  yellow : white;
+    RenderText ("Sound Power",soundRect.x+20,soundRect.y+10,soundColor,gFont,gRenderer);
 }
 void RenderPauseScreen()
 {
@@ -255,10 +278,36 @@ void RenderSpeedScreen() {
     RenderText("Slow", slowRect.x + 50, slowRect.y + 5, slowColor,gFont,gRenderer); RenderText("Medium", mediumRect.x + 40, mediumRect.y + 5, mediumColor,gFont,gRenderer); RenderText("Fast", fastRect.x + 50, fastRect.y + 5, fastColor,gFont,gRenderer);
     SDL_Color menuColor = SDL_PointInRect(&mousePoint, &menuRect) ? yellow : white; RenderText("Back (Esc)", menuRect.x + 35, menuRect.y + 5, menuColor,gFont,gRenderer);
 }
+void RenderSoundScreen() {
+    SDL_Color white = {255, 255, 255, 255};
+    SDL_Color yellow = {255, 255, 0, 255};
+    SDL_Color green = {0, 255, 0, 255};
+
+    RenderText("Sound", (SCREEN_WIDTH - 100) / 2, SCREEN_HEIGHT / 5, white, gFont, gRenderer);
+
+    int buttonW = 150, buttonH = 40;
+    int buttonX = (SCREEN_WIDTH - buttonW) / 2;
+    int buttonY = SCREEN_HEIGHT / 3;int spacing = 50;
+    SoundOnRect = {buttonX, buttonY + spacing * 1, buttonW, buttonH};
+    SoundOffRect = {buttonX, buttonY + spacing * 2, buttonW, buttonH};
+    menuRect = {buttonX, buttonY + spacing * 3, buttonW, buttonH};
+    int mouseX, mouseY;SDL_GetMouseState(&mouseX, &mouseY);
+    SDL_Point mousePoint = {mouseX, mouseY};
+    SDL_Color SoundOnColor = (Mix_PlayingMusic() && !Mix_PausedMusic()) ? green : white;
+    if (SDL_PointInRect(&mousePoint, &SoundOnRect)) SoundOnColor = yellow;
+    SDL_Color SoundOffColor = (!Mix_PlayingMusic() || Mix_PausedMusic()) ? green : white;
+    if (SDL_PointInRect(&mousePoint, &SoundOffRect)) SoundOffColor = yellow;
+    RenderText("On", SoundOnRect.x + 55, SoundOnRect.y + 5, SoundOnColor, gFont, gRenderer);
+    RenderText("Off", SoundOffRect.x + 50, SoundOffRect.y + 5, SoundOffColor, gFont, gRenderer);
+    SDL_Color menuColor = SDL_PointInRect(&mousePoint, &menuRect) ? yellow : white;
+    RenderText("Back (Esc)", menuRect.x + 25, menuRect.y + 5, menuColor, gFont, gRenderer);
+}
+
 void RenderGameScreen(const Point& current_direction) {
     if (gBackgroundTexture != nullptr) { SDL_RenderCopy(gRenderer, gBackgroundTexture, NULL, NULL); }
     if(score % 5 == 0 && score > 0 ) drawNewFoods();
     else if(score > 0 && score % 3 == 0 ) bomb();
+    else if(score > 0 && score % 7 ==0 ) blindbox();
     else drawFoods();
     if (showDouble) {
     Uint32 now = SDL_GetTicks();
@@ -281,10 +330,11 @@ void HandleMenuInput(SDL_Event& e) {
         int mouseX, mouseY; SDL_GetMouseState(&mouseX, &mouseY); SDL_Point mousePoint = {mouseX, mouseY};
         if (SDL_PointInRect(&mousePoint, &startRect)) {
             ResetGame(); currentState = PLAYING;
-            if (gMusic) { if (Mix_PausedMusic()) { Mix_ResumeMusic(); } else if (!Mix_PlayingMusic()) { Mix_PlayMusic(gMusic, -1); } }
+            if (gMusic && soundpower == true) { if (Mix_PausedMusic()) { Mix_ResumeMusic(); } else if (!Mix_PlayingMusic()) { Mix_PlayMusic(gMusic, -1); } }
         } else if (SDL_PointInRect(&mousePoint, &speedRect)) { currentState = SPEED_SELECTION; }
         else if (SDL_PointInRect(&mousePoint, &highScoreRect)) { currentState = HIGH_SCORE_DISPLAY; }
         else if (SDL_PointInRect(&mousePoint, &quitRect)) { gameIsRunning = false; }
+        else if(SDL_PointInRect(&mousePoint , &soundRect)) {currentState = SOUND_POWER;}
     } else if (e.type == SDL_KEYDOWN) {
         if (e.key.keysym.sym == SDLK_RETURN || e.key.keysym.sym == SDLK_SPACE) {
             ResetGame(); currentState = PLAYING;
@@ -347,11 +397,35 @@ void HandleSpeedInput(SDL_Event& e) {
         else if (SDL_PointInRect(&mousePoint, &fastRect)) { gameSpeedDelay = 80; currentState = MENU; }
         else if (SDL_PointInRect(&mousePoint, &menuRect)) { currentState = MENU; } }
 }
+void HandleSoundInput(SDL_Event& e) {
+    if (e.type == SDL_MOUSEBUTTONDOWN) {
+        int mouseX, mouseY;
+        SDL_GetMouseState(&mouseX, &mouseY);
+        SDL_Point mousePoint = { mouseX, mouseY };
+
+        if (SDL_PointInRect(&mousePoint, &SoundOnRect)) {
+                soundpower = true;
+            if (Mix_PlayingMusic() == 0 || Mix_PausedMusic() == 1) {
+                Mix_ResumeMusic();
+            }
+            else Mix_PauseMusic();
+            currentState = MENU;
+        }
+        else if (SDL_PointInRect(&mousePoint, &SoundOffRect)) {
+            soundpower = false;
+            Mix_HaltMusic();
+            currentState = MENU;
+        }
+        else if (SDL_PointInRect(&mousePoint, &menuRect)) currentState = MENU;
+    }
+}
+
 void CoreGame() {
     gHeadTexture = loadTexture("img/head.png", gRenderer); gBodyTexture = loadTexture("img/body.png", gRenderer);
     gFoodTexture = loadTexture("img/food.png", gRenderer); gBackgroundTexture = loadTexture("img/SnakeGameBackGround.jpg", gRenderer);
     gNewFood = loadTexture("img/newfood.png",gRenderer);
     gBestFood = loadTexture("img/bestfood.png",gRenderer);
+    gBox = loadTexture("img/blindbox.png",gRenderer);
     LoadHighScore(highScore);
     SDL_Event e;
     while (gameIsRunning) {
@@ -365,6 +439,7 @@ void CoreGame() {
                 case PAUSED: HandlePauseInput(e); break;
                 case HIGH_SCORE_DISPLAY: HandleReturnMenuInput(e); break;
                 case SPEED_SELECTION: HandleSpeedInput(e); break;
+                case SOUND_POWER    :HandleSoundInput(e);break;
             }
              if (!gameIsRunning) break;
         }
@@ -399,9 +474,18 @@ if (it != foods.end()) {
         showDouble  = true;
         doubleStart = SDL_GetTicks();
     }
-    if ( !foods.empty() && next_head == foods.back() && score % 3 == 0 && score>0) {
+    if ( !foods.empty() && next_head == foods.back() && score % 3 == 0 && score>0 && score%15 != 0) {
         if(gBomb) play(gBomb);
         currentState = MENU;
+    }
+    else if(!foods.empty() && next_head == foods.back() && score % 7 == 0 && score>0 )
+    {
+        int res = rand() % 2;
+        if(res == 0) {if(gBomb) play(gBomb);
+        currentState = MENU;}
+        else  {score *= 2;
+        showDouble  = true;
+        doubleStart = SDL_GetTicks();}
     }
     else score++;
     if (gEat) play(gEat);
@@ -448,6 +532,7 @@ if (it != foods.end()) {
             case PAUSED: RenderGameScreen(direction); RenderPauseScreen(); break;
             case HIGH_SCORE_DISPLAY: RenderHighScoreScreen(); break;
             case SPEED_SELECTION: RenderSpeedScreen(); break;
+            case SOUND_POWER    : RenderSoundScreen(); break;
         }
 
         SDL_RenderPresent(gRenderer);
