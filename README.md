@@ -21,6 +21,7 @@
 ##### 2, Các ý tưởng về xử lý va chạm, lưu điểm, hiện text được tham khảo từ kênh sau: https://www.youtube.com/watch?v=q1WzniyeGTU&list=PLR7NDiX0QsfTIEQUeYCfc2MyCquX0ig9V&index=1
 ##### 3, Một số vấn đề cài đặt và các vấn đề khác có tham khảo từ kênh YTB của cô Trần Thị Minh Châu. 
 ##### 4, Tham khảo code SnakeGame từ trang YTB sau:https://www.youtube.com/watch?v=My148D4Ybc8&t=191s
+##### 5, Mồi tùy biến:💣,X2 Double và BlindBox.
 ####  c)Các tính năng cơ bản đã hoàn thiện:
 ##### 1,Sư +r dụng các lệnh cơ bản:Texture,BackGround,Event,Scỏe,Sound
 ##### 2,Đã hoàn thiện Menu,Paused,Resume.
